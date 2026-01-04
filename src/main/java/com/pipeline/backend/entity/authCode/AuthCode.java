@@ -1,9 +1,7 @@
 package com.pipeline.backend.entity.authCode;
 
 import jakarta.persistence.*;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.type.SqlTypes;
 
@@ -15,6 +13,8 @@ import java.util.UUID;
 @Table(name = "auth_codes")
 @Getter
 @Setter
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
+@AllArgsConstructor
 public class AuthCode {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
@@ -26,7 +26,7 @@ public class AuthCode {
     @Column(name = "code_hash", nullable = false, length = 255)
     private String codeHash;
 
-    @Column(name = "type", columnDefinition = "code_type")
+    @Column(name = "type", columnDefinition = "code_type", nullable = false)
     @Enumerated(EnumType.STRING)
     @JdbcTypeCode(SqlTypes.NAMED_ENUM)
     private CodeType authCode;

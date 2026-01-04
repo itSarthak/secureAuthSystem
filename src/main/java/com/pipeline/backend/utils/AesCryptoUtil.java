@@ -16,6 +16,7 @@ public class AesCryptoUtil {
     private final SecretKey secretKey;
     private final SecureRandom secureRandom = new SecureRandom();
 
+
     public AesCryptoUtil(byte[] key) {
         this.secretKey = new SecretKeySpec(key, "AES");
     }

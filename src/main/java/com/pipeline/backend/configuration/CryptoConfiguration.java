@@ -12,7 +12,7 @@ public class CryptoConfiguration {
 
     @Bean
     public AesCryptoUtil aesCryptoUtil(
-        @Value("${security.aes.secret-key") String secretKey
+        @Value("${security.aes.secret-key}") String secretKey
     ) {
         byte[] key = Base64.getDecoder().decode(secretKey);
         return new AesCryptoUtil(key);

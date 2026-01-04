@@ -3,6 +3,7 @@ package com.pipeline.backend.service;
 import com.pipeline.backend.dto.SignupInitialRequestDTO;
 import com.pipeline.backend.dto.SignupInitialResponseDTO;
 import com.pipeline.backend.entity.authCode.AuthCode;
+import com.pipeline.backend.entity.authCode.CodeType;
 import com.pipeline.backend.entity.user.Provider;
 import com.pipeline.backend.entity.user.Status;
 import com.pipeline.backend.entity.user.User;
@@ -34,6 +35,8 @@ public class AuthService {
     private final AuthRepository authRepository;
 
     private final MailService mailService;
+
+    private final JwtService jwtService;
 
     private static final int OTP_EXPIRY_MINUTES = 10;
 
@@ -70,6 +73,15 @@ public class AuthService {
                         log.info("Creating new unverified user for email: {}", requestDTO.getEmail());
                         return userRepository.save(newUser);
                 });
+        //2. If user is found check if an otp is recently generated and is still valid, if yes then do not generate a new otp
+        Optional<AuthCode> existingAuthCode = authRepository.findTopByUserIdOrderByExpiresAtDesc(user.getId());
+        if(existingAuthCode.isPresent()
+                && (null != existingAuthCode.get().getAuthCode() && existingAuthCode.get().getAuthCode().equals(CodeType.SIGNUP_OTP))
+                && existingAuthCode.get().getExpiresAt().isAfter(Instant.now())) {
+            log.info("An active OTP already exists for user ID: {}. Not generating a new OTP.", user.getId());
+            throw new AuthenticationException("An OTP has already been sent to your email. Please check your inbox.");
+        }
+
 
         // 2. Generate a verification token/otp, save it to the db with expiry time and send email to user
         String otp = securityUtils.generateOTP();
@@ -79,6 +91,7 @@ public class AuthService {
         AuthCode authCode = AuthCode.builder()
                 .userId(user.getId())
                 .codeHash(hashedOtp)
+                .authCode(CodeType.SIGNUP_OTP)
                 .expiresAt(expiryTime)
                 .build();
 
@@ -89,7 +102,8 @@ public class AuthService {
         log.info("OTP email sent to: {}", requestDTO.getEmail());
 
         // 3. Now take the userId, encrypt it with AES, generate jwt with claims and send response back to user
-        SignupInitialResponseDTO responseDTO = new SignupInitialResponseDTO();
-        return responseDTO;
+        return SignupInitialResponseDTO.builder()
+                .signupAuthToken(jwtService.generateSignupToken(securityUtils.saltAndEncryptID(user.getId().toString())))
+                .build();
     }
 }

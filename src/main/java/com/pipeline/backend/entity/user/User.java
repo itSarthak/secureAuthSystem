@@ -1,13 +1,10 @@
 package com.pipeline.backend.entity.user;
 
 import jakarta.persistence.*;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.type.SqlTypes;
 
-import java.security.AuthProvider;
 import java.time.Instant;
 import java.util.UUID;
 
@@ -16,6 +13,8 @@ import java.util.UUID;
 @Table(name="users")
 @Getter
 @Setter
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
+@AllArgsConstructor
 public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
