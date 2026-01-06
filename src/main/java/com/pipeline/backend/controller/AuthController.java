@@ -1,8 +1,6 @@
 package com.pipeline.backend.controller;
 
-import com.pipeline.backend.dto.ErrorResponse;
-import com.pipeline.backend.dto.SignupInitialRequestDTO;
-import com.pipeline.backend.dto.SignupInitialResponseDTO;
+import com.pipeline.backend.dto.*;
 import com.pipeline.backend.service.AuthService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -49,5 +47,11 @@ public class AuthController {
         return ResponseEntity
                 .status(HttpStatus.CREATED)
                 .body(authService.initiateSignup(requestDTO));
+    }
+
+    @PostMapping("/signup/complete")
+    public ResponseEntity<UserInfoDTO> completeSignup(@RequestBody SignupCompleteRequestDTO requestDTO) {
+        // Implementation for completing signup
+        return ResponseEntity.ok.body("Signup completed");
     }
 }
