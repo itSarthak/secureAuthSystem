@@ -50,8 +50,8 @@ public class AuthController {
     }
 
     @PostMapping("/signup/complete")
-    public ResponseEntity<UserInfoDTO> completeSignup(@RequestBody SignupCompleteRequestDTO requestDTO) {
+    public ResponseEntity<String> completeSignup(@RequestBody SignupCompleteRequestDTO requestDTO) {
         // Implementation for completing signup
-        return ResponseEntity.ok.body("Signup completed");
+        return ResponseEntity.ok().body("Signup completed");
     }
 }
